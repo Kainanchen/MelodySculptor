@@ -1,7 +1,26 @@
 function X = stft(x, R, Nfft)
 x = x(:).'; 
-n = (1:R) - 0.5;
-window  = cos(pi*n/R-pi/2);
+%% Half Cosine window
+%n = (1:R) - 0.5;
+%window  = cos(pi*n/R-pi/2);
+
+%% Hanning window
+%n=1:R;
+%window = 0.5+0.5*cos(2*pi*n/R);
+
+%% Hamming window
+%n=1:R;
+%window = 0.54+0.46*cos(2*pi*n/R);
+
+%% Blackman window
+%n=1:R;
+%window = 0.42-0.5*cos(2*pi*n/R)+0.08*cos(4*pi*n/R);
+
+%% Blackman-Harris window
+n=1:R;
+window=1/R*(0.35875*cos(2*pi*n/R)+0.48829*cos(4*pi*n/R)+0.14128*cos(6*pi*n/R)+0.01168*cos(8*pi*n/R));
+
+
 x = [zeros(1,R) x zeros(1,R)];
 
 Nx = length(x);
