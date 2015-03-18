@@ -8,8 +8,8 @@ N = length(x);
 
 %% Compute STFT
 
-R = 512;                
-Nfft = 1024;          
+R = 256;                
+Nfft = 512;  %2048 was too large for my memory        
 X = stft(x, R, Nfft); 
     
 %% Energy
@@ -18,9 +18,10 @@ dse=zeros(1,m);
 marke=zeros(1,m);
 marked=zeros(1,m);
 for i=2:m
-for k=1:Nfft
-    dse(i)=dse(i)+abs(X(k,i))-abs(X(k,i-1));  %energy determine function
-end
+%for k=1:Nfft
+%    dse(i)=dse(i)+abs(X(k,i))-abs(X(k,i-1));  %energy determine function
+%end
+dse(i)=sum(abs(X(:,i)-abs(X(:,i-1))));
 delta=0.3*sum(abs(X(:,i-1)));  %assumed threshold
 if dse(i)>delta
     marke(i)=1;
@@ -48,10 +49,13 @@ for i=1:m-1
 if i<=3
     dsp(i)=0;
 else
-    for k=1:Nfft
-        pf(k)=arg(X(k,i))-2*arg(X(k,i-1))+arg(X(k,i-2));  % phase deviation
-        dsp(i)=dsp(i)+abs(princarg(pf(k)))*uX(k,i); % dsp is the weighted mean
-    end
+%    for k=1:Nfft
+%        pf(k)=unwrap(unwrap(angle(X(k,i))-angle(X(k,i-1)))-unwrap(angle(X(k,i-1))-angle(X(k,i-2))));  % phase deviation
+%        dsp(i)=dsp(i)+abs(princarg(pf(k)))*uX(k,i); % dsp is the weighted mean
+%    end
+PhaseArray=unwrap([angle(X(:,i-2)),angle(X(:,i-1)),angle(X(:,i))]);
+    pf=PhaseArray(:,3)-2*PhaseArray(:,2)+PhaseArray(:,1);
+    dsp(i)=sum(abs(princarg(pf'*uX(:,i))));
     if dsp(i)>deltap
         markp(i)=1;
     end
@@ -78,12 +82,17 @@ for i=1:m-1
     if i<=3
         dsc(i)=0;
     else
-        for k=1:Nfft
-            ep(k)=princarg(2*arg(X(k,i-1))-arg(X(k,i-2)));
-            amp(k)=abs(X(k,i-1));
-            estsig=amp(k)*exp(j*ep(k));
-            disc(i)=disc(i)+sqrt((real(estsig)-real(X(k,i)))^2+(imag(estsig)-imag(X(k,i)))^2); % detection function for complex distance
-        end
+%       for k=1:Nfft
+%           ep(k)=princarg(2*arg(X(k,i-1))-arg(X(k,i-2)));
+%            amp(k)=abs(X(k,i-1));
+%            estsig=amp(k)*exp(j*ep(k));
+%            disc(i)=disc(i)+sqrt((real(estsig)-real(X(k,i)))^2+(imag(estsig)-imag(X(k,i)))^2); % detection function for complex distance
+%        end
+        PhaseArray=unwrap([angle(X(:,i-1)),angle(X(:,i))]);
+        ep=princarg(2*PhaseArray(:,2)-PhaseArray(:,1));
+        amp=abs(X(:,i-1));
+        estsig=amp'*exp(j*ep);
+        disc(i)=sum(sqrt(real((estsig-X(:,i))).^2+(imag(estsig-X(:,i))).^2)); %This is a universal distance, should use weighted distance?
     end
         
 deltac=5; % random constant?
