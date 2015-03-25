@@ -20,26 +20,17 @@ Marke = DSE>TM;                                 % Mark
 
 
 %% Phase
-m = F;
-dsp=zeros(1,m);
-markp=zeros(1,m);
-markpd=zeros(1,m);
-deltap=0.2*pi;  
+%m = F;
 
-for i=1:m-1
-    uX(:,i)=abs(X(:,i))/(sum(abs(X(:,i)))); % weighting matrix
-if i<=3
-    dsp(i)=0;
-else
-PhaseArray=unwrap([angle(X(:,i-2)),angle(X(:,i-1)),angle(X(:,i))]);
-    pf=PhaseArray(:,3)-2*PhaseArray(:,2)+PhaseArray(:,1);
-    dsp(i)=sum(abs(princarg(pf'*uX(:,i))));
-    if dsp(i)>deltap
-        markp(i)=1;
-    end
-end
-display(i);
-end
+PN=sum(M,1);
+uX=diag(inv(diag(PN)));
+uX=(uX*ones(1,length(uX)))';
+WX=M.*uX(1:size(M,1),:);
+PhaseArray=((unwrap(angle(X(:,3:end)),pi,2)).*WX(:,3:end)-(2*unwrap(angle(X(:,2:end-1)),pi,2)).*WX(:,2:end-1)+(unwrap(angle(X(:,1:end-2)),pi,2)).*WX(:,1:end-2));
+PhaseDF=sum(PhaseArray,1);
+deltap=pi*ones(1,length(PhaseDF));
+MarkP=PhaseDF>deltap;
+
 
 %% Complex domain
 disc=zeros(m);
@@ -100,3 +91,23 @@ end;
 % end
 % end       
     
+
+%dsp=zeros(1,m);
+%markp=zeros(1,m);
+%markpd=zeros(1,m);
+%deltap=0.2*pi;
+
+%for i=1:m-1
+%    uX(:,i)=abs(X(:,i))/(sum(abs(X(:,i)))); % weighting matrix
+%if i<=3
+%    dsp(i)=0;
+%else
+%PhaseArray=unwrap([angle(X(:,i-2)),angle(X(:,i-1)),angle(X(:,i))]);
+%    pf=PhaseArray(:,3)-2*PhaseArray(:,2)+PhaseArray(:,1);
+%    dsp(i)=sum(abs(princarg(pf'*uX(:,i))));
+%    if dsp(i)>deltap
+%        markp(i)=1;
+%    end
+%end
+%display(i);
+%end
