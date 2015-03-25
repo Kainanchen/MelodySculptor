@@ -1,25 +1,26 @@
 clear
 close all
 
-[source,fs] = audioread('sheismysin.wav');
-x = source(:,1);
-L = size(x,1);
-N = 2048;
-N2 = ceil((N+1)/2);
-H = floor(N/4);
-F = ceil((L-N)/H);
-X = spectrogram(x,hann(N),N-H,N,fs);
-M = abs(X);
+[source,fs] = audioread('sheismysin.wav');      % Read source
+x = source(:,1);                                % Select a channel
+L = size(x,1);                                  % Audio length
+N = 2048;                                       % N of FFT
+N2 = ceil((N+1)/2);                             % Half N
+H = floor(N/4);                                 % Hop size
+F = ceil((L-N)/H);                              % No. of frames
+X = spectrogram(x,hann(N),N-H,N,fs);            % STFT
+M = abs(X);                                     % Spectrum Magnitude
 
 %% Energy
-DSE = sum(M(:,2:end)-M(:,1:end-1),1);
-TM = 0.3*sum(M(:,1:end-1),1);
-Marke = DSE>TM;
+DSE = sum(M(:,2:end)-M(:,1:end-1),1);           % DSE
+TM = 0.3*sum(M(:,1:end-1),1);                   % Magnitude threshold
+Marke = DSE>TM;                                 % Mark
 
 
 
 
 %% Phase
+m = F;
 dsp=zeros(1,m);
 markp=zeros(1,m);
 markpd=zeros(1,m);
@@ -69,7 +70,7 @@ else
         markc(i-H/2)=0;
     end
 end
-display(i);
+%display(i);
 end;
 
 
