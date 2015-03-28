@@ -34,8 +34,11 @@ MarkP=PhaseDF>deltap;
 
 %% Complex domain
 disc=zeros(m);
-markc=zeros(m);
-H=2*ceil(m/100); % H introduces delay
+MarkC=zeros(m);
+PhaseArray = unwrap(angle(X));
+EstimatedPhase=princarg(2*PhaseArray(:,2:end)-PhaseArray(:,1:end-1));
+EstimatedSig=M(:,1:end-1).*exp(j*EstimatedPhase);
+ComDist=sum(sqrt(real(EstimatedSig-M(:,2:end)).^2+(imag(EstimatedSig-M(:,2:end)).^2)),1);
 for i=1:m-1
     uX(:,i)=abs(X(:,i))/(sum(abs(X(:,i))));
     if i<=3
