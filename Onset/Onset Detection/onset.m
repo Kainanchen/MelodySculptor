@@ -27,44 +27,26 @@ MarkP = PD(2:end)>TP;
 
 
 %% Complex domain
-stem(MarkP)
-hold on
-stem(MarkE(2:end-1),'r')
-
-
+%stem(MarkP)
+%hold on
+%stem(MarkE(2:end-1),'r')
+m=size(M,2);
+delta=5;
+lamda=1;
 disc=zeros(m);
-MarkC=zeros(m);
+MarkC=zeros(1,m-H);
 PhaseArray = unwrap(angle(X));
 EstimatedPhase=princarg(2*PhaseArray(:,2:end)-PhaseArray(:,1:end-1));
 EstimatedSig=M(:,1:end-1).*exp(1j*EstimatedPhase);
 ComDist=sum(sqrt(real(EstimatedSig-M(:,2:end)).^2+(imag(EstimatedSig-M(:,2:end)).^2)),1);
-for i=1:m-1
-    uX(:,i)=abs(X(:,i))/(sum(abs(X(:,i))));
-    if i<=3
-        dsc(i)=0;
-    else
-
-        PhaseArray=unwrap([angle(X(:,i-1)),angle(X(:,i))]);
-        ep=princarg(2*PhaseArray(:,2)-PhaseArray(:,1));
-        amp=abs(X(:,i-1));
-        estsig=amp'*exp(1j*ep);
-        disc(i)=sum(sqrt(real((estsig-X(:,i))).^2+(imag(estsig-X(:,i))).^2)); 
-    end
-        
-deltac=5; % random constant?
-lamda=1;
-if i<H % assuming the first non-zero index is smaller than half width of median filter
-    markc(i)=0;
-else
-    eta=median(disc(i-H/2:i+H/2));
-    if disc(i-H/2)>=deltac+lamda*eta
-        markc(i-H/2)=1;
-    else
-        markc(i-H/2)=0;
-    end
+threshold=zeros(1,m-H);
+NoT=length(threshold);
+for i =1:NoT;
+    threshold(i)=delta+lamda*median(ComDist(i:i+H-1)); %moving median solvable for matrix?
 end
-%display(i);
-end;
+MarkC=ComDist(H/2:end-H/2)>threshold(1:end);
+MarkC=[zeros(1,H/2),MarkC,zeros(1,H/2)];
+
 
 
 
@@ -115,3 +97,31 @@ end;
 %end
 %
 %PhaseArray=((unwrap(angle(X(:,3:end)),pi,2)).*WX(:,3:end)-(2*unwrap(angle(X(:,2:end-1)),pi,2)).*WX(:,2:end-1)+(unwrap(angle(X(:,1:end-2)),pi,2)).*WX(:,1:end-2));
+
+%for i=1:m-1
+%    uX(:,i)=abs(X(:,i))/(sum(abs(X(:,i))));
+%    if i<=3
+%        dsc(i)=0;
+%    else
+%
+%        PhaseArray=unwrap([angle(X(:,i-1)),angle(X(:,i))]);
+%        ep=princarg(2*PhaseArray(:,2)-PhaseArray(:,1));
+%        amp=abs(X(:,i-1));
+%        estsig=amp'*exp(1j*ep);
+%        disc(i)=sum(sqrt(real((estsig-X(:,i))).^2+(imag(estsig-X(:,i))).^2)); 
+%    end
+%        
+%deltac=5; % random constant?
+%lamda=1;
+%if i<H % assuming the first non-zero index is smaller than half width of median filter
+%    markc(i)=0;
+%else
+%    eta=median(disc(i-H/2:i+H/2));
+%    if disc(i-H/2)>=deltac+lamda*eta
+%        markc(i-H/2)=1;
+%    else
+%        markc(i-H/2)=0;
+%    end
+%end
+%display(i);
+%end;
