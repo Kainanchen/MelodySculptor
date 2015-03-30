@@ -4,7 +4,7 @@ close all
 [source,fs] = audioread('sheismysin.wav');      % Read source
 x = source(:,1);                                % Select a channel
 L = size(x,1);                                  % Audio length
-N = 1024;                                       % N of FFT
+N = 2048;                                       % N of FFT
 N2 = ceil((N+1)/2);                             % Half N
 H = floor(N/4);                                 % Hop size
 F = ceil((L-N)/H);                              % No. of frames
@@ -31,16 +31,16 @@ MarkP = PD(2:end)>TP;
 %hold on
 %stem(MarkE(2:end-1),'r')
 m=size(M,2);
-delta=5.95;
+delta=5;
 lamda=1;
 disc=zeros(m);
 MarkC=zeros(1,m-H);
 PhaseArray = unwrap(angle(X));
 EstimatedPhase=princarg(2*PhaseArray(:,2:end-1)-PhaseArray(:,1:end-2));
 EstimatedSig=M(:,2:end-1).*exp(1j*EstimatedPhase);
-ComDist=sum(sqrt((real(EstimatedSig)-real(X(:,3:end))).^2+(imag(EstimatedSig)-imag(X(:,3:end))).^2),1);
+ComDist=sum(sqrt((real(EstimatedSig)-M(:,3:end)).^2+(imag(EstimatedSig)-M(:,3:end)).^2),1);
 
-threshold=zeros(1,m-H-1);
+threshold=zeros(1,m-H);
 NoT=length(threshold);
 for i =1:NoT;
     threshold(i)=delta+lamda*median(ComDist(i:i+H-1)); %moving median solvable for matrix?
