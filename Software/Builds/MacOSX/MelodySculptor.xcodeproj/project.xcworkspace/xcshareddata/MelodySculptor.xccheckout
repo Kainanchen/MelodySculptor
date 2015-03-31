@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>462E2718-B343-4645-8D39-B1A4B8FD817B</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MelodySculptor</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>EDB2C4D640463D9B5EFD19FF5F686319F9B36EEC</key>
+		<string>https://github.com/Kainanchen/MelodySculpter.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Software/Builds/MacOSX/MelodySculptor.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>EDB2C4D640463D9B5EFD19FF5F686319F9B36EEC</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/Kainanchen/MelodySculpter.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>EDB2C4D640463D9B5EFD19FF5F686319F9B36EEC</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>EDB2C4D640463D9B5EFD19FF5F686319F9B36EEC</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MelodySculptor</string>
+		</dict>
+	</array>
+</dict>
+</plist>
