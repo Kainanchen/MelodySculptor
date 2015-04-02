@@ -15,7 +15,7 @@ SX = M./repmat(sum(M),N2,1);
 WX = (SX(:,1:end-2)+SX(:,2:end-1)+SX(:,3:end))/3;
 %% Energy
 DSE = sum(M(:,2:end)-M(:,1:end-1),1);           % DSE
-TM = 0.2*sum(M(:,1:end-1),1);                   % Magnitude threshold
+TM = 0.1*sum(M(:,1:end-1),1);                   % Magnitude threshold
 MarkE = DSE>TM;                                 % Mark
 
 %% Phase
@@ -39,9 +39,12 @@ for i =1:NoT;
 end
 MarkC=ComDist(H/2:end-H/2)>threshold(1:end);
 MarkC=[zeros(1,H/2),MarkC,zeros(1,H/2)];
+MarkFinal=MarkC.*MarkE;
 
 % stem(MarkP)
 % hold on
 % stem(MarkE(2:end-1),'r')
 % hold on
-stem(MarkC,'b')
+stem(MarkFinal(1:round(end/5)),'b');
+hold on
+%stem(MarkC(1:round(end/10)),'r');
