@@ -3,8 +3,6 @@ close all
 fc=0.05;
 fp=0.1;
 [source,fs] = audioread('SheIsMySin.wav');      % Read source
-HP=designfilt('highpassfir','StopbandFrequency',fc,'PassbandFrequency',fp,'PassbandRipple',0.5);
-source=filter(HP,source);
 x = source(:,1);                                % Select a channel
 L = size(x,1);                                  % Audio length
 N = 1024;                                       % N of FFT
@@ -41,22 +39,7 @@ threshold=zeros(1,F-FH-1);
 for i =1:F-FH-1;
     threshold(i)=delta+lamda*median(ComDist(i:i+FH-1));
 end
-<<<<<<< HEAD
+
 MarkC=ComDist(FH/2:end-FH/2)>threshold(1:end);
 MarkC=[zeros(1,FH/2),MarkC,zeros(1,FH/2)];
 stem(MarkC(1:end));
-=======
-MarkC=ComDist(H/2:end-H/2)>threshold(1:end);
-MarkC=[zeros(1,H/2),MarkC,zeros(1,H/2)];
-MarkFinal=MarkC.*MarkE;
-
-% stem(MarkP)
-% hold on
-% stem(MarkE(2:end-1),'r')
-% hold on
-figure;
-stem(MarkFinal(1:round(end/5)),'b');
-%hold on
-figure;
-stem(MarkC(1:round(end/5)),'r');
->>>>>>> origin/master
