@@ -7,14 +7,14 @@ L = size(x,1);                                  % Audio length
 N = 1024;                                       % N of FFT
 N2 = ceil((N+1)/2);                             % Half N
 H = floor(N/2);                                 % Hop size
-FH = 2^(nextpow2(0.2*fs/H)-1);                                        % Frame Hop size
+FH = 2^(nextpow2(0.2*fs/H)-1);                  % Frame Hop size
 F = ceil((L-N)/H);                              % No. of frames
 X = spectrogram(x,hann(N),N-H,N,fs);            % STFT
 X = X(round(N/40):round(N/4),:);
 M = abs(X);                                     % Spectrum Magnitude
-P = unwrap(angle((X)));                         % Spectrum Phase
-SX = M./repmat(sum(M),size(M,1),1);
-WX = (SX(:,1:end-2)+SX(:,2:end-1)+SX(:,3:end))/3;
+P = unwrap(angle(X));                           % Spectrum Phase
+SX = M./repmat(sum(M),size(M,1),1);					% Summed X
+WX = (SX(:,1:end-2)+SX(:,2:end-1)+SX(:,3:end))/3;	% Weighted X
 
 %% Energy
 % DSE = sum(M(:,2:end)-M(:,1:end-1),1);           % DSE
