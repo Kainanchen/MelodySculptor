@@ -12,7 +12,6 @@ x = [x', zeros(1, blockNum*blockLen-L)]';       % Zero padding
 N = 1024;                                       % N of FFT
 N2 = ceil((N+1)/2);                             % Half N
 H = floor(N/2);                                 % Hop size
-FH = 2^(nextpow2(0.2*fs/H)-1);                  % Frame Hop size
 F = ceil((blockLen-N)/H);                       % No. of frames
 
 stopconv = 40;      % stopping criterion (can be adjusted)
@@ -27,7 +26,7 @@ for i=1:1    % use the first block for now
     block = x((i-1)*blockLen+1 : i*blockLen);
     X = spectrogram(block,hann(N),N-H,N,fs);        % STFT
     M = abs(X);                                     % Spectrum Magnitude
-    % P = unwrap(angle(X));                           % Spectrum Phase
+    P = unwrap(angle(X));                           % Spectrum Phase
     
     cons=zeros(F,F);
     consold=cons;
@@ -49,7 +48,7 @@ for i=1:1    % use the first block for now
         if(mod(i,10)==0)  
             j=j+1;
             
-            % adjust small values to avoid undeflow
+            % adjust small values to avobd undeflow
             h=max(h,eps);w=max(w,eps);
             
             % construct connectivity matrix
@@ -74,6 +73,42 @@ for i=1:1    % use the first block for now
             consold=cons;
         end
     end
+end
+
+
+%% Reconstruct audio from basis
+
+% Overlap-add synthesis
+R = w * h;                             % Magnitude
+Z = R .* exp(1i * P);                  % Reconstructed complex number
+Z = [Z; conj(Z(end-1:-1:2, :))];       % Complete the spectrogram
+xr = zeros(1, N+(F-1)*H);              % Initialize reconstructed signal
+sw = blackmanharris(N, 'periodic');    % Synthesis window
+for k = 1:F
+    xi = ifft(Z(:,k), 'symmetric');
+    % overlap-add
+    xr((k-1)*H+1 : (k-1)*H+N) = xr((k-1)*H+1 : (k-1)*H+N) + (xi.*sw)';
+end
+xr = xr.*H/sum(sw.^2);      % Normalization
+
+outputAudio = 'reconstruction_all.wav';
+wavwrite(xr,fs,outputAudio);
+
+for j = 1:r
+    R = w(:,j) * h(j,:);                             % Magnitude
+    Z = R .* exp(1i * P);                  % Reconstructed complex number
+    Z = [Z; conj(Z(end-1:-1:2, :))];       % Complete the spectrogram
+    xr = zeros(1, N+(F-1)*H);              % Initialize reconstructed signal
+    sw = blackmanharris(N, 'periodic');    % Synthesis window
+    for k = 1:F
+        xi = ifft(Z(:,k), 'symmetric');
+        % overlap-add
+        xr((k-1)*H+1 : (k-1)*H+N) = xr((k-1)*H+1 : (k-1)*H+N) + (xi.*sw)';
+    end
+    xr = xr.*H/sum(sw.^2);      % Normalization
+
+    outputAudio = ['reconstruction_basis',num2str(j),'.wav'];
+    wavwrite(xr,fs,outputAudio);
 end
 
 
@@ -109,12 +144,21 @@ ylabel('H');
 
 % plot reconstruction of each basis
 figure(3);
-for i = 1:r
-    subplot(1, r, i)
-    imagesc((1:F)*H/fs, fs/N*(1:N2), log(w(:, i) * h(i, :))); % plot the log spectrum
+for k = 1:r
+    subplot(r, 1, k);
+    imagesc((1:F)*H/fs, fs/N*(1:N2), log(w(:, k) * h(k, :))); % plot the log spectrum
     set(gca,'YDir', 'normal'); % flip the Y Axis so lower frequencies
                                % are at the bottom
-    title(['Basis ', num2str(i), ' Reconstruction']);
+    title(['Basis ', num2str(k), ' Reconstruction']);
     xlabel('Time (s)');
     ylabel('Frequency (Hz)');
 end
+
+% plot reconstruction of all basis
+figure(4);
+imagesc((1:F)*H/fs, fs/N*(1:N2), log(w * h)); % plot the log spectrum
+set(gca,'YDir', 'normal'); % flip the Y Axis so lower frequencies
+                           % are at the bottom
+title(['Reconstruction All']);
+xlabel('Time (s)');
+ylabel('Frequency (Hz)');
