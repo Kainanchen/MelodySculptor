@@ -1,11 +1,14 @@
 clear
 close all
 
-[source,fs] = audioread('../../Audio/SheIsMySin.wav');      % Read source
+%[source,fs] = audioread('../../Audio/SheIsMySin.wav');      % Read
+                                                            % source
+[source,fs] = audioread('test.wav');
 x = source(:,1);                                % Select a channel
 L = size(x,1);                                  % Audio length
 
 blockLen = fs*5;                                % Block length
+% blockLen = L;
 blockNum = ceil(L/blockLen);                    % Block number
 x = [x', zeros(1, blockNum*blockLen-L)]';       % Zero padding
 
@@ -34,6 +37,7 @@ for i=1:1    % use the first block for now
     j=0;
     
     %% initialize random w and h
+    rng('shuffle');
     w=rand(N2,r);
     h=rand(r,F);
 
@@ -95,7 +99,7 @@ outputAudio = 'reconstruction_all.wav';
 wavwrite(xr,fs,outputAudio);
 
 for j = 1:r
-    R = w(:,j) * h(j,:);                             % Magnitude
+    R = w(:,j) * h(j,:);                   % Magnitude
     Z = R .* exp(1i * P);                  % Reconstructed complex number
     Z = [Z; conj(Z(end-1:-1:2, :))];       % Complete the spectrogram
     xr = zeros(1, N+(F-1)*H);              % Initialize reconstructed signal
@@ -112,7 +116,7 @@ for j = 1:r
 end
 
 
-%% plot results
+%% Plot results
 % plot original spectrogram
 figure(1);
 imagesc((1:F)*H/fs, fs/N*(1:N2), log(M)); % plot the log spectrum
